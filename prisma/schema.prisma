@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  username      String         @unique
+  firstName     String         @default("Google")
+  lastName      String         @default("User")
+  email         String         @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  role          String         @default("customer")
+  sessions      Session[]
+
+  cartItems     CartItem[]
+  accounts      OAuthAccount[]
+}
+
+model OAuthAccount {
+  id                String   @id @default(uuid())
+  userId            String
+  provider          String
+  providerAccountId String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  userId    String   
+  isValid   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+model CartItem {
+  id                            String  @id @default(uuid())
+  userId                        String
+  productId                     String
+  quantity                      Int
+  product                       Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user                          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Product {
+  id                          String     @id @default(uuid())
+  name                        String
+  description                 String
+  price                       Float
+  image                       String
+  category                    String
+  isFeatured                  Boolean    @default(false)
+  imageId                     String
+  stock                       Int
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @default(now())
+
+  cartItems                   CartItem[]
+
+  @@index([category])
+  @@index([isFeatured, price])
+}

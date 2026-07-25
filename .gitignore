@@ -1,5 +1,14 @@
 node_modules
 # Keep environment variables out of version control
 .env
+.env.local
+.env.*.local
 
 /generated/prisma
+
+# Dependency directories
+node_modules/
+
+# macOS system trash
+.DS_Store
+.neon/
