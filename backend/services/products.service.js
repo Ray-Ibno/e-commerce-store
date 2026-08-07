@@ -1,91 +1,67 @@
-import prisma from '../lib/prisma.js'
-import redis from '../config/redis.js'
-import * as constant from '../constants/index.js'
 import AppError from '../errors/AppError.js'
 import * as cloudinaryService from './cloudinary.service.js'
 import { getRecommendations } from '../pipelines/products.pipeline.js'
-import { getCacheKeys } from '../helpers/cacheKeys.helper.js'
-
-const CACHE_TIME = 20 * 60 * 60
+import { productDB } from '../repositories/productDB.repository.js'
+import { productCache } from '../repositories/productCache.repository.js'
 
 export const fetchAllProducts = async () => {
-  const cached = await redis.get(constant.REDIS_ALL_PRODUCTS)
+  const cached = await productCache.getAllCached()
   if (cached) return JSON.parse(cached)
 
-  const allProducts = await prisma.product.findMany()
+  const allProducts = await productDB.findMany()
   if (allProducts.length === 0) throw new AppError('No products found', 404)
 
-  await redis.set(constant.REDIS_ALL_PRODUCTS, JSON.stringify(allProducts), 'EX', CACHE_TIME)
+  await productCache.cacheAllProducts(allProducts)
 
   return allProducts
 }
 
 export const fetchFeaturedProducts = async () => {
-  const cached = await redis.get(constant.REDIS_FEATURED_PRODUCTS)
+  const cached = await productCache.getFeaturedCached()
   if (cached) return JSON.parse(cached)
 
-  const featuredProducts = await prisma.product.findMany({ where: { isFeatured: true } })
+  const featuredProducts = await productDB.findAllFeatured()
   if (featuredProducts.length === 0) throw new AppError('No featured products found', 404)
 
-  await redis.set(
-    constant.REDIS_FEATURED_PRODUCTS,
-    JSON.stringify(featuredProducts),
-    'EX',
-    CACHE_TIME,
-  )
+  await productCache.cacheFeatured(featuredProducts)
 
   return featuredProducts
 }
 
 export const fetchByCategory = async (category) => {
-  const cached = await redis.get(`${constant.REDIS_BYCATEGORY_PRODUCTS}:${category}`)
+  const cached = await productCache.getByCategoryCached(category)
   if (cached) return JSON.parse(cached)
 
-  const byCategory = await prisma.product.findMany({ where: { category } })
+  const byCategory = await productDB.findByCategory(category)
   if (!byCategory) throw new AppError('No category found', 404)
 
-  await redis.set(
-    `${constant.REDIS_BYCATEGORY_PRODUCTS}:${category}`,
-    JSON.stringify(byCategory),
-    'EX',
-    CACHE_TIME,
-  )
+  await productCache.cacheByCategory(category, byCategory)
 
   return byCategory
 }
 
 export const fetchRecommendedProducts = async (currentProductId) => {
-  const cached = await redis.get(`${constant.REDIS_RECOMMENDED_PRODUCTS}:${currentProductId}`)
+  const cached = await productCache.getRecommendedCached(currentProductId)
   if (cached) return JSON.parse(cached)
 
-  const currentProduct = await prisma.product.findUnique({ where: { id: currentProductId } })
+  const currentProduct = await productDB.findById(currentProductId)
   if (!currentProduct) throw new AppError('No product found', 404)
 
   const recommendations = await getRecommendations(currentProduct.id, currentProduct.category)
 
-  await redis.set(
-    `${constant.REDIS_RECOMMENDED_PRODUCTS}:${currentProductId}`,
-    JSON.stringify(recommendations),
-    'EX',
-    CACHE_TIME,
-  )
+  await productCache.cacheRecommended(currentProductId, recommendations)
 
   return recommendations
 }
 
 export const fetchProduct = async (productId) => {
-  const cached = await redis.get(`${constant.REDIS_PRODUCT}:${productId}`)
+  const cached = await productCache.getCachedById(productId)
   if (cached) return JSON.parse(cached)
 
-  const product = await prisma.product.findUnique({ where: { id: productId } })
+  const product = await productDB.findById(productId)
   if (!product) throw new AppError('No product found', 404)
 
-  await redis.set(
-    `${constant.REDIS_PRODUCT}:${productId}`,
-    JSON.stringify(product),
-    'EX',
-    CACHE_TIME,
-  )
+  await productCache.cacheProduct(productId, product)
 
   return product
 }
@@ -102,10 +78,9 @@ export const postProduct = async (productData, fileBuffer) => {
       imageId: cloudinaryResult.public_id,
     }
 
-    const newProduct = await prisma.product.create({ data: finalData })
+    const newProduct = await productDB.createProduct(finalData)
 
-    //remove outdated cache
-    await redis.del(getCacheKeys(newProduct.category))
+    await productCache.clearAllCached(newProduct.category)
 
     return newProduct
   } catch (error) {
@@ -117,43 +92,31 @@ export const postProduct = async (productData, fileBuffer) => {
 }
 
 export const updateProductFeature = async (productId) => {
-  const product = await prisma.product.findUnique({ where: { id: productId } })
+  const product = await productDB.findById(productId)
   if (!product) throw new AppError('No product found', 404)
 
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId, isFeatured: product.isFeatured },
-    data: { isFeatured: !product.isFeatured },
-  })
+  const updatedProduct = await productDB.updateProductFeature(productId, product.isFeatured)
 
-  //remove outdated cache
-  await redis.del([
-    ...getCacheKeys(updatedProduct.category),
-    constant.REDIS_PRODUCT + `:${productId}`,
-  ])
+  await productCache.clearAllCached(updatedProduct.category, productId)
 
   return updatedProduct
 }
 
 export const updateProduct = async (productId, newData) => {
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId },
-    data: newData,
-  })
+  const updatedProduct = await productDB.updateProductData(productId, newData)
   if (!updatedProduct) throw new AppError('No product found', 404)
 
-  //remove outdated cache
-  await redis.del(getCacheKeys(updatedProduct.category))
+  await productCache.clearAllCached(updatedProduct.category)
 
   return updatedProduct
 }
 
 export const deleteProduct = async (productId) => {
-  const deletedProduct = await prisma.product.delete({ where: { id: productId } })
+  const deletedProduct = await productDB.deleteProduct(productId)
   if (!deletedProduct) throw new AppError('No product found', 404)
   if (deletedProduct.imageId) await cloudinaryService.deleteImage(deletedProduct.imageId)
 
-  //remove outdated cache
-  await redis.del(getCacheKeys(deletedProduct.category), constant.REDIS_PRODUCT + `:${productId}`)
+  await productCache.clearAllCached(deletedProduct.category, productId)
 
   return true
 }
