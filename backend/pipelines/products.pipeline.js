@@ -1,23 +1,8 @@
-import prisma from '../lib/prisma.js'
+import { productDB } from '../repositories/productDB.repository.js'
 
 export const getRecommendations = async (currentProductId, category) => {
   // 1. Fetch matching rows from the database
-  const products = await prisma.product.findMany({
-    where: {
-      id: { not: currentProductId }, // Exclude current product
-      OR: [
-        { category: category }, // Condition 1
-        { isFeatured: true }, // Condition 2
-      ],
-    },
-    select: {
-      id: true,
-      title: true,
-      price: true,
-      category: true,
-      isFeatured: true,
-    },
-  })
+  const products = await productDB.findRecommendations(currentProductId, category)
 
   // 2. Compute recommendation scores and sort in memory
   return products
