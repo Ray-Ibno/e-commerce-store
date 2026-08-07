@@ -7,18 +7,24 @@ import { generateTokens } from '../utils/generateTokens.js'
 import jwt, { verify } from 'jsonwebtoken'
 import * as authService from './auth.service.js'
 
+jest.mock('../config/redis.js', () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+}))
+
+jest.mock('../lib/prisma.js', () => ({
+  findUnique: jest.fn(),
+  findMany: jest.fn(),
+  deleteMany: jest.fn(),
+}))
+
 jest.mock('../repositories/userDB.repository.js', () => ({
-  userDB: {
-    findById: jest.fn(),
-  },
+  ...jest.createMockFromModule('../repositories/userDB.repository.js'),
 }))
 
 jest.mock('../repositories/sessionDB.repository.js', () => ({
-  sessionDB: {
-    invalidateSession: jest.fn(),
-    findManyAndSelectIds: jest.fn(),
-    invalidateUserSessions: jest.fn(),
-  },
+  ...jest.createMockFromModule('../repositories/sessionDB.repository.js'),
 }))
 
 jest.mock('../repositories/sessionCache.repository.js', () => ({
