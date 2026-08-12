@@ -1,8 +1,8 @@
-import redis from '../config/redis'
-import * as constant from '../constants'
-import { getCacheKeys } from '../helpers/cacheKeys.helper'
+import redis from '../config/redis.js'
+import * as constant from '../constants/index.js'
+import { getCacheKeys } from '../helpers/cacheKeys.helper.js'
 
-const CACHE_TIME = 20 * 60 * 60
+const CACHE_TIME = 20 * 60
 
 export const productCache = {
   getCachedById(productId) {
