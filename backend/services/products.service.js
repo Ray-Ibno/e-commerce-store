@@ -3,27 +3,28 @@ import * as cloudinaryService from './cloudinary.service.js'
 import { getRecommendations } from '../pipelines/products.pipeline.js'
 import { productDB } from '../repositories/productDB.repository.js'
 import { productCache } from '../repositories/productCache.repository.js'
+import { safeAwait } from '../helpers/await.helper.js'
 
 export const fetchAllProducts = async () => {
-  const cached = await productCache.getAllCached()
+  const cached = await safeAwait(productCache.getAllCached())
   if (cached) return JSON.parse(cached)
 
   const allProducts = await productDB.findMany()
   if (allProducts.length === 0) throw new AppError('No products found', 404)
 
-  await productCache.cacheAllProducts(allProducts)
+  await safeAwait(productCache.cacheAllProducts(allProducts))
 
   return allProducts
 }
 
 export const fetchFeaturedProducts = async () => {
-  const cached = await productCache.getFeaturedCached()
+  const cached = await safeAwait(productCache.getFeaturedCached())
   if (cached) return JSON.parse(cached)
 
   const featuredProducts = await productDB.findAllFeatured()
   if (featuredProducts.length === 0) throw new AppError('No featured products found', 404)
 
-  await productCache.cacheFeatured(featuredProducts)
+  await safeAwait(productCache.cacheFeatured(featuredProducts))
 
   return featuredProducts
 }
@@ -35,7 +36,7 @@ export const fetchByCategory = async (category) => {
   const byCategory = await productDB.findByCategory(category)
   if (!byCategory) throw new AppError('No category found', 404)
 
-  await productCache.cacheByCategory(category, byCategory)
+  await safeAwait(productCache.cacheByCategory(category, byCategory))
 
   return byCategory
 }
@@ -49,7 +50,7 @@ export const fetchRecommendedProducts = async (currentProductId) => {
 
   const recommendations = await getRecommendations(currentProduct.id, currentProduct.category)
 
-  await productCache.cacheRecommended(currentProductId, recommendations)
+  await safeAwait(productCache.cacheRecommended(currentProductId, recommendations))
 
   return recommendations
 }
@@ -61,7 +62,7 @@ export const fetchProduct = async (productId) => {
   const product = await productDB.findById(productId)
   if (!product) throw new AppError('No product found', 404)
 
-  await productCache.cacheProduct(productId, product)
+  await safeAwait(productCache.cacheProduct(productId, product))
 
   return product
 }
@@ -80,7 +81,10 @@ export const postProduct = async (productData, fileBuffer) => {
 
     const newProduct = await productDB.createProduct(finalData)
 
-    await productCache.clearAllCached(newProduct.category)
+    await safeAwait(
+      productCache.clearAllCached(newProduct.category),
+      'failed to clear all cached products',
+    )
 
     return newProduct
   } catch (error) {

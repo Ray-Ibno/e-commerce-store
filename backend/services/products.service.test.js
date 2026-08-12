@@ -69,6 +69,7 @@ describe('fetchAllProducts', () => {
 
   test('should fetch all products, cache them, and return them on cache miss', async () => {
     productCache.getAllCached.mockResolvedValue(null)
+    productCache.cacheAllProducts.mockResolvedValue(1)
     productDB.findMany.mockResolvedValue(mockAllProducts)
 
     const result = await productService.fetchAllProducts()
@@ -110,6 +111,7 @@ describe('fetchFeaturedProducts', () => {
 
   test('should fetch featured products, cache them, and return them on cache miss', async () => {
     productCache.getFeaturedCached.mockResolvedValue(null)
+    productCache.cacheFeatured.mockResolvedValue(1)
     productDB.findAllFeatured.mockResolvedValue(mockFeaturedProducts)
 
     const result = await productService.fetchFeaturedProducts()
@@ -152,6 +154,7 @@ describe('fetchByCategory', () => {
 
   test('should fetch products by category, cache them, and return them on cache miss', async () => {
     productCache.getByCategoryCached.mockResolvedValue(null)
+    productCache.cacheByCategory.mockResolvedValue(1)
     productDB.findByCategory.mockResolvedValue(mockProductsByCategory)
 
     const result = await productService.fetchByCategory(mockProductCategory)
@@ -198,6 +201,7 @@ describe('fetchRecommendedProducts', () => {
 
   test('should run getRecommendations if product exists, cache them, and return them on cache miss', async () => {
     productCache.getRecommendedCached.mockResolvedValue(null)
+    productCache.cacheRecommended.mockResolvedValue(1)
     productDB.findById.mockResolvedValue(mockProduct)
     getRecommendations.mockResolvedValue(mockRecommendations)
 
@@ -243,6 +247,7 @@ describe('fetchProduct', () => {
 
   test('should fetch product, cache data, and return it on cache miss', async () => {
     productCache.getCachedById.mockResolvedValue(null)
+    productCache.cacheProduct.mockResolvedValue(1)
     productDB.findById.mockResolvedValue(mockProduct)
 
     const result = await productService.fetchProduct(mockProductId)
