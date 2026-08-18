@@ -10,6 +10,7 @@ export const updateCartItemSchema = z.object({
   body: z.object({
     productId: z.string().min(1, 'Product id is required').uuid(),
     quantity: z.coerce.number().min(1, 'Item quantity is required'),
+    clientUpdatedAt: z.string().min(1, 'Client update date is required'),
   }),
 })
 
