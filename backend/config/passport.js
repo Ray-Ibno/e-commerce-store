@@ -2,6 +2,7 @@ import passport from 'passport'
 import google from 'passport-google-oauth20'
 import prisma from '../lib/prisma.js'
 import { SEVEN_DAYS_IN_MS } from '../constants/index.js'
+import { encryptToken, decryptToken } from '../utils/tokenEncryption.js'
 
 const GoogleStrategy = google.Strategy
 
@@ -15,6 +16,7 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         let activeUser
+        let finalRefreshToken = refreshToken
 
         const oAuthAccount = await prisma.oAuthAccount.findUnique({
           where: {
@@ -44,6 +46,7 @@ passport.use(
                   role: 'customer',
                 },
               },
+              refreshToken: encryptToken(finalRefreshToken),
             },
             include: {
               user: true,
@@ -53,6 +56,14 @@ passport.use(
           activeUser = newOauthAccount.user
         } else {
           activeUser = oAuthAccount.user
+
+          if (!finalRefreshToken) finalRefreshToken = decryptToken(oAuthAccount.refreshToken)
+
+          refreshToken &&
+            (await prisma.oAuthAccount.update({
+              where: { id: oAuthAccount.id },
+              data: { refreshToken: encryptToken(refreshToken) },
+            }))
         }
 
         const session = await prisma.session.create({
@@ -66,6 +77,8 @@ passport.use(
           userId: activeUser.id,
           role: activeUser.role,
           sessionId: session.id,
+          googleAccessToken: accessToken,
+          googleRefreshToken: finalRefreshToken || null,
         }
 
         return done(null, user)

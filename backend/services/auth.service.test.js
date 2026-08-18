@@ -1,9 +1,8 @@
-import { REDIS_AUTH_KEY, SEVEN_DAYS } from '../constants/index.js'
+import { REDIS_AUTH_KEY } from '../constants/index.js'
 import AppError from '../errors/AppError.js'
 import { sessionCache } from '../repositories/sessionCache.repository.js'
 import { sessionDB } from '../repositories/sessionDB.repository.js'
 import { userDB } from '../repositories/userDB.repository.js'
-import { generateTokens } from '../utils/generateTokens.js'
 import jwt, { verify } from 'jsonwebtoken'
 import * as authService from './auth.service.js'
 
@@ -34,13 +33,24 @@ jest.mock('../repositories/sessionCache.repository.js', () => ({
   },
 }))
 
-jest.mock('../utils/generateTokens.js', () => ({
-  generateTokens: jest.fn(),
-}))
-
 jest.mock('jsonwebtoken', () => ({
   verify: jest.fn(),
 }))
+
+const mockUser = {
+  userId: 'testId',
+  role: 'testRole',
+  sessionId: 'testSession',
+  googleAccessToken: 'mockAccessToken',
+  googleRefreshToken: 'mockRefreshToken',
+}
+
+const mockSessionPayload = {
+  userId: mockUser.userId,
+  role: mockUser.role,
+  googleAccessToken: mockUser.googleAccessToken,
+  googleRefreshToken: mockUser.googleRefreshToken,
+}
 
 describe('fetchProfile', () => {
   beforeEach(() => {
@@ -76,45 +86,29 @@ describe('cacheSession', () => {
     jest.clearAllMocks()
   })
 
-  const mockUser = {
-    userId: 'testId',
-    role: 'testRole',
-    sessionId: 'testSession',
-  }
-
-  const mockTokens = {
-    accessToken: 'accessToken',
-    refreshToken: 'refreshToken',
-  }
-
-  test('should cache the session and return accessToken and RefeshToken', async () => {
+  test('should cache the session', async () => {
     sessionCache.setSession.mockResolvedValue(1)
-    generateTokens.mockReturnValue(mockTokens)
+    const mockAccessExpiresAt = Date.now() + Number(process.env.ACCESS_TOKEN_EXP | '900000')
 
     const result = await authService.cacheSession(mockUser)
 
     expect(sessionCache.setSession).toHaveBeenCalledWith(
       `${REDIS_AUTH_KEY}:${mockUser.sessionId}`,
-      mockTokens.refreshToken,
-      SEVEN_DAYS,
+      { ...mockSessionPayload, accessExpiresAt: mockAccessExpiresAt },
     )
 
-    expect(generateTokens).toHaveBeenCalledWith(mockUser.userId, mockUser.role, mockUser.sessionId)
-    expect(result).toEqual(mockTokens)
+    expect(result).toEqual(1)
   })
 
-  test('should still generate token even when redis cache is down', async () => {
+  test('should return 0 if safeAwait catched an error from redis', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-
     sessionCache.setSession.mockRejectedValue(new Error('Redis is down'))
-    generateTokens.mockReturnValue(mockTokens)
 
     const result = await authService.cacheSession(mockUser)
 
     expect(consoleSpy).toHaveBeenCalledWith('Cache synchronization failed: ', 'Redis is down')
 
-    expect(generateTokens).toHaveBeenCalledWith(mockUser.userId, mockUser.role, mockUser.sessionId)
-    expect(result).toEqual(mockTokens)
+    expect(result).toEqual(null)
   })
 })
 
@@ -134,39 +128,25 @@ describe('singleLogOut', () => {
     process.env = originalEnv
   })
 
-  const mockDecoded = {
-    userId: 'testId',
-    role: 'testRole',
-    sessionId: 'testSession',
-  }
-
-  const mockRefreshToken = 'refreshToken123'
-
-  test('should delete redis session key and databese session', async () => {
-    jwt.verify.mockReturnValue(mockDecoded)
+  test('should delete redis session key', async () => {
     sessionCache.deleteKey.mockResolvedValue(1)
-    sessionDB.invalidateSession.mockResolvedValue(1)
 
-    await authService.singleLogOut(mockRefreshToken)
+    await authService.singleLogOut(mockUser.sessionId)
 
-    expect(jwt.verify).toHaveBeenCalledWith(mockRefreshToken, 'secret')
-    expect(sessionCache.deleteKey).toHaveBeenCalledWith(
-      `${REDIS_AUTH_KEY}:${mockDecoded.sessionId}`,
-    )
-    expect(sessionDB.invalidateSession).toHaveBeenCalledWith(mockDecoded.sessionId)
+    expect(sessionCache.deleteKey).toHaveBeenCalledWith(`${REDIS_AUTH_KEY}:${mockUser.sessionId}`)
   })
 
-  test('should throw an error if token is not verified', async () => {
-    jwt.verify.mockImplementation(() => {
-      throw new Error('Token verification error')
-    })
+  test('should return 0 if safeAwait catched an error from redis', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+    sessionCache.deleteKey.mockRejectedValue(new Error('Redis is down'))
 
-    await expect(authService.singleLogOut(mockRefreshToken)).rejects.toThrow(
-      'Token verification error',
+    const result = await authService.singleLogOut(mockUser.sessionId)
+
+    expect(consoleSpy).toHaveBeenCalledWith(
+      `Cache miss: Session deletion failed for ${REDIS_AUTH_KEY}:${mockUser.sessionId}: `,
+      'Redis is down',
     )
-
-    expect(sessionCache.deleteKey).not.toHaveBeenCalled()
-    expect(sessionDB.invalidateSession).not.toHaveBeenCalled()
+    expect(result).toEqual(null)
   })
 })
 
@@ -180,13 +160,11 @@ describe('logOutAll', () => {
 
   test('should delete users database and cache sessions', async () => {
     sessionDB.findManyAndSelectIds.mockResolvedValue(mockActiveSessions)
-    sessionDB.invalidateUserSessions.mockResolvedValue({ count: 2 })
     sessionCache.deleteKey.mockResolvedValue(1)
 
     await authService.logOutAll(mockUserId)
 
     expect(sessionDB.findManyAndSelectIds).toHaveBeenCalledWith(mockUserId)
-    expect(sessionDB.invalidateUserSessions).toHaveBeenCalledWith(mockUserId)
 
     expect(sessionCache.deleteKey).toHaveBeenCalledTimes(2)
     expect(sessionCache.deleteKey).toHaveBeenNthCalledWith(1, `${REDIS_AUTH_KEY}:session1`)
@@ -195,9 +173,8 @@ describe('logOutAll', () => {
 
   test('should proceed with execution even when redis cache is down', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-
     sessionDB.findManyAndSelectIds.mockResolvedValue(mockActiveSessions)
-    sessionDB.invalidateUserSessions.mockResolvedValue({ count: 2 })
+
     sessionCache.deleteKey.mockRejectedValue(new Error('Redis is down'))
 
     await authService.logOutAll(mockUserId)
@@ -208,7 +185,6 @@ describe('logOutAll', () => {
     )
 
     expect(sessionDB.findManyAndSelectIds).toHaveBeenCalledWith(mockUserId)
-    expect(sessionDB.invalidateUserSessions).toHaveBeenCalledWith(mockUserId)
 
     consoleSpy.mockRestore()
   })

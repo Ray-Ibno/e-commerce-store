@@ -1,7 +1,6 @@
 import AppError from '../errors/AppError.js'
 import jwt from 'jsonwebtoken'
-import { REDIS_AUTH_KEY, SEVEN_DAYS } from '../constants/index.js'
-import { generateTokens } from '../utils/generateTokens.js'
+import { REDIS_AUTH_KEY } from '../constants/index.js'
 import { userDB } from '../repositories/userDB.repository.js'
 import { sessionDB } from '../repositories/sessionDB.repository.js'
 import { sessionCache } from '../repositories/sessionCache.repository.js'
@@ -16,29 +15,30 @@ export const fetchProfile = async (userId) => {
 
 export const cacheSession = async (user) => {
   const sessionKey = `${REDIS_AUTH_KEY}:${user.sessionId}`
+  const accessExpiresAt = Date.now() + Number(process.env.ACCESS_TOKEN_EXP | '900000')
 
-  const { accessToken, refreshToken } = generateTokens(user.userId, user.role, user.sessionId)
-  await safeAwait(sessionCache.setSession(sessionKey, refreshToken, SEVEN_DAYS))
+  const sessionPayload = {
+    userId: user.userId,
+    role: user.role,
+    googleAccessToken: user.googleAccessToken,
+    googleRefreshToken: user.googleRefreshToken,
+    accessExpiresAt,
+  }
 
-  return { accessToken, refreshToken }
+  return await safeAwait(sessionCache.setSession(sessionKey, sessionPayload))
 }
 
-export const singleLogOut = async (refreshToken) => {
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-  const sessionKey = `${REDIS_AUTH_KEY}:${decoded.sessionId}`
+export const singleLogOut = async (sessionId) => {
+  const sessionKey = `${REDIS_AUTH_KEY}:${sessionId}`
 
-  await safeAwait(
+  return await safeAwait(
     sessionCache.deleteKey(sessionKey),
     `Cache miss: Session deletion failed for ${sessionKey}: `,
   )
-
-  return await sessionDB.invalidateSession(decoded.sessionId)
 }
 
 export const logOutAll = async (userId) => {
   const activeSessions = await sessionDB.findManyAndSelectIds(userId)
-
-  await sessionDB.invalidateUserSessions(userId)
 
   return await safeAwait(
     Promise.all(
