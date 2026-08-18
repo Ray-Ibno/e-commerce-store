@@ -19,7 +19,7 @@ export const addItemToCart = async (userId, productId) => {
   return cartItem
 }
 
-export const updateItemQuantity = async (userId, productId, quantity) => {
+export const updateItemQuantity = async (userId, productId, quantity, clientUpdatedAt) => {
   if (quantity < 0) throw new AppError('quantity can not be negative', 400)
 
   if (quantity === 0) {
@@ -33,11 +33,16 @@ export const updateItemQuantity = async (userId, productId, quantity) => {
     return await cartDB.findCartItems(userId)
   }
 
-  const updateResult = await cartDB.updateQuantity(userId, productId, quantity)
+  const updateResult = await cartDB.updateQuantity(userId, productId, quantity, clientUpdatedAt)
 
   if (updateResult.count === 0) {
     const itemExists = await cartDB.findIfCartItemExists(userId, productId)
     if (!itemExists) throw new AppError('Item not found in cart', 404)
+
+    if (new Date(itemExists.updatedAt).getTime() !== new Date(clientUpdatedAt).getTime()) {
+      throw new AppError('Your cart is out of sync. Please refresh.', 409) // 409 Conflict
+    }
+
     throw new AppError('Item quantity exceeds available stock', 400)
   }
 
