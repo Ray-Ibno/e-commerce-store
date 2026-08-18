@@ -1,61 +1,66 @@
 import { REDIS_AUTH_KEY } from '../constants/index.js'
 import AppError from '../errors/AppError.js'
-import jwt from 'jsonwebtoken'
 import redis from '../config/redis.js'
-import { bakeTokens } from '../utils/cookieHelper.js'
+import { clearSessionCookie } from '../utils/cookieHelper.js'
 import { safeAwait } from '../helpers/await.helper.js'
-import { generateTokens } from '../utils/generateTokens.js'
+import axios from 'axios'
 
 export const authenticate = async (req, res, next) => {
-  const { accessToken, refreshToken } = req.cookies
+  const sessionId = req.cookies.sid
 
-  if (!accessToken) {
+  if (!sessionId) {
     throw new AppError('You are not authenticated. Please log in', 401)
   }
 
-  try {
-    const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-    req.user = decoded
-    return next()
-  } catch (accessError) {
-    if (accessError.name === 'TokenExpiredError' && refreshToken) {
-      try {
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET)
-        const sessionKey = `${REDIS_AUTH_KEY}:${decoded.sessionId}`
+  const sessionKey = `${REDIS_AUTH_KEY}:${sessionId}`
+  const cachedSessionRaw = await safeAwait(redis.get(sessionKey))
 
-        const cachedToken = await safeAwait(redis.get(sessionKey))
-
-        if (!cachedToken || cachedToken !== refreshToken) {
-          await safeAwait(
-            redis.del(sessionKey),
-            `Cached session key deletion of ${sessionKey} failed: `,
-          )
-
-          throw new AppError('Invalid or reused session. Please log in again.', 401)
-        }
-
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(
-          decoded.id,
-          decoded.role,
-          decoded.sessiontId,
-        )
-
-        await safeAwait(
-          redis.set(sessionKey, newRefreshToken),
-          `Cached key update failed for ${sessionKey}: `,
-        )
-
-        bakeTokens(accessToken, newRefreshToken, res)
-
-        req.user = decoded
-        next()
-      } catch (refreshErr) {
-        throw new AppError('Session invalid or expired', 401)
-      }
-    }
-
-    throw new AppError('Invalid token', 401)
+  if (!cachedSessionRaw) {
+    clearSessionCookie(res)
+    throw new AppError('Invalid or reused session. Please log in again.', 401)
   }
+
+  let sessionData = JSON.parse(cachedSessionRaw)
+
+  if (Date.now() >= sessionData.accessExpiresAt) {
+    try {
+      console.log('Access token expired internally. Performing silent server-side refresh...')
+
+      if (!sessionData.googleRefreshToken) {
+        throw new AppError('No refresh token available for backround refresh', 401)
+      }
+
+      const response = await axios.post('https://oauth2.googleapis.com/token', {
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        refreshToken: sessionData.googleRefreshToken,
+        grant_type: 'refresh_token',
+      })
+
+      const data = response.data
+
+      sessionData.googleAccessToken = data.access_token
+      sessionData.accessExpiresAt = Date.now() + data.expires_in * 1000 - 60 * 1000
+
+      await safeAwait(redis.set(sessionKey, JSON.stringify(sessionData), 'KEEPTTL'))
+      console.log('Background token refresh successful')
+    } catch (refreshErr) {
+      console.error('BFF background token refresh failed:', refreshErr.message)
+      await safeAwait(redis.del(sessionKey))
+      clearSessionCookie(res)
+      throw new AppError('Session invalid or expired', 401)
+    }
+  }
+
+  req.user = {
+    userId: sessionData.userId,
+    role: sessionData.role,
+    sessionId: sessionId,
+  }
+
+  delete req.headers['cookie']
+
+  return next()
 }
 
 export const restrictTo =

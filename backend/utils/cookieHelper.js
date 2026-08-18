@@ -7,24 +7,15 @@ const DEFAULT_OPTIONS = {
 }
 
 /**
- * @param {string} accessToken - Access Token
- * @param {string} refreshToken - Refresh Token
+ * @param {string} sessionId - Session Id
  * @param {Object} res - Express response object
  */
 
-export const bakeTokens = (accessToken, refreshToken, res) => {
-  res.cookie('accessToken', accessToken, {
+export const bakeSessionCookie = (sessionId, res) => {
+  res.cookie('sid', sessionId, {
     ...DEFAULT_OPTIONS,
-    maxAge: process.env.ACCESS_TOKEN_EXP,
-  })
-
-  res.cookie('refreshToken', refreshToken, {
-    ...DEFAULT_OPTIONS,
-    maxAge: process.env.REFRESH_TOKEN_EXP,
+    maxAge: Number(process.env.REFRESH_TOKEN_EXP),
   })
 }
 
-export const clearAllSiteCookies = (res) => {
-  // Instructs the browser to instantly destroy EVERY cookie on this domain
-  res.set('Clear-Site-Data', '"cookies"')
-}
+export const clearSessionCookie = (res) => res.clearCookie('sid', DEFAULT_OPTIONS)

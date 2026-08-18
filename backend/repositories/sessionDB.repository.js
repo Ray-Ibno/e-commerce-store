@@ -10,10 +10,4 @@ export const sessionDB = {
       select: { id: true },
     })
   },
-  invalidateSession(sessionId) {
-    return prisma.session.deleteMany({ where: { id: sessionId } })
-  },
-  invalidateUserSessions(userId) {
-    return prisma.session.deleteMany({ where: { userId } })
-  },
 }

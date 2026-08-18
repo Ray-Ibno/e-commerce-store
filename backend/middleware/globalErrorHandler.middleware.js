@@ -1,4 +1,4 @@
-import { clearAllSiteCookies } from '../utils/cookieHelper.js'
+import { clearSessionCookie } from '../utils/cookieHelper.js'
 
 export const globalErrorHandler = (err, req, res, next) => {
   console.error(`ERROR 💥:`, err.stack)
@@ -8,7 +8,7 @@ export const globalErrorHandler = (err, req, res, next) => {
   const sessionCompromised = 'Invalid or reused session. Please log in again.'
 
   if (statusCode === 401 && err.message.includes(sessionCompromised)) {
-    clearAllSiteCookies(res)
+    clearSessionCookie(res)
   }
 
   res.status(statusCode).json({
