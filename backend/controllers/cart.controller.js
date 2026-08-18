@@ -15,8 +15,13 @@ export const addToCart = async (req, res) => {
 }
 
 export const updateQuantity = async (req, res) => {
-  const { productId, quantity } = req.body
-  const updatedItem = await cartService.updateItemQuantity(req.user.userId, productId, quantity)
+  const { productId, quantity, clientUpdatedAt } = req.body
+  const updatedItem = await cartService.updateItemQuantity(
+    req.user.userId,
+    productId,
+    quantity,
+    clientUpdatedAt,
+  )
   updatedItem.message
     ? sendSuccess({ res, statusCode: 200, data: updatedItem.data, message: updatedItem.message })
     : sendSuccess({ res, statusCode: 200, data: updatedItem.data })
