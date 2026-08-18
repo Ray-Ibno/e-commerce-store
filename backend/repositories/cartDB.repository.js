@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import AppError from '../errors/AppError.js'
 import prisma from '../lib/prisma.js'
 
@@ -24,10 +25,12 @@ export const cartDB = {
         },
       })
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        return next(new AppError('Item already in your cart', 400))
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') throw new AppError('Item already in your cart', 400)
+        if (error.code === 'P2003') throw new AppError('Item no longer exist', 404)
       }
-      next(error)
+
+      throw error
     }
   },
   findIfCartItemExists(userId, productId) {
@@ -35,16 +38,17 @@ export const cartDB = {
       where: { userId_productId: { userId, productId } },
     })
   },
-  updateQuantity(userId, productId, quantity) {
+  updateQuantity(userId, productId, quantity, clientUpdatedAt) {
     return prisma.cartItem.updateMany({
       where: {
         userId,
         productId,
+        updatedAt: new Date(clientUpdatedAt),
         product: {
           stock: { gte: quantity },
         },
       },
-      data: { quantity: { increment: quantity } },
+      data: { quantity, updatedAt: new Date() },
     })
   },
   deleteSingleCartItem(userId, productId) {

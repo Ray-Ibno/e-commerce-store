@@ -32,7 +32,10 @@ jest.mock('../repositories/cartDB.repository', () => ({
 const mockCartItem = {
   id: 'productId1',
   product: 'product',
+  updatedAt: '2026-08-16T02:57:44.455Z',
 }
+
+const mockUpdatedAt = '2026-08-16T02:57:44.455Z'
 
 const mockCartItems = [
   {
@@ -117,12 +120,22 @@ describe('updateItemQuantity', () => {
     cartDB.findCartItems.mockResolvedValue(mockCartItems)
     cartCache.deleteCartItems.mockResolvedValue(1)
 
-    const result = await cartService.updateItemQuantity(mockUserId, mockProductId, mockQuantity)
+    const result = await cartService.updateItemQuantity(
+      mockUserId,
+      mockProductId,
+      mockQuantity,
+      mockUpdatedAt,
+    )
 
     expect(result).toEqual(mockCartItems)
     expect(cartCache.deleteCartItems).toHaveBeenCalledWith(mockUserId)
     expect(cartDB.findCartItems).toHaveBeenCalledWith(mockUserId)
-    expect(cartDB.updateQuantity).toHaveBeenCalledWith(mockUserId, mockProductId, mockQuantity)
+    expect(cartDB.updateQuantity).toHaveBeenCalledWith(
+      mockUserId,
+      mockProductId,
+      mockQuantity,
+      mockUpdatedAt,
+    )
   })
 
   test('should delete the cart item if quantity is equal to 0', async () => {
@@ -130,7 +143,7 @@ describe('updateItemQuantity', () => {
     cartDB.findCartItems.mockResolvedValue(mockCartItems)
     cartCache.deleteCartItems.mockResolvedValue(1)
 
-    const result = await cartService.updateItemQuantity(mockUserId, mockProductId, 0)
+    const result = await cartService.updateItemQuantity(mockUserId, mockProductId, 0, mockUpdatedAt)
 
     expect(cartDB.deleteSingleCartItem).toHaveBeenCalledWith(mockUserId, mockProductId)
     expect(cartDB.findCartItems).toHaveBeenCalledWith(mockUserId)
@@ -141,9 +154,9 @@ describe('updateItemQuantity', () => {
     cartDB.deleteSingleCartItem.mockResolvedValue({ count: 0 })
     cartDB.findIfCartItemExists.mockResolvedValue(null)
 
-    await expect(cartService.updateItemQuantity('wrongUserId', mockProductId, 0)).rejects.toThrow(
-      new AppError('Item not found in your cart', 404),
-    )
+    await expect(
+      cartService.updateItemQuantity('wrongUserId', mockProductId, 0, mockUpdatedAt),
+    ).rejects.toThrow(new AppError('Item not found in your cart', 404))
 
     expect(cartDB.findIfCartItemExists).toHaveBeenCalledWith('wrongUserId', mockProductId)
     expect(cartDB.deleteSingleCartItem).toHaveBeenCalledWith('wrongUserId', mockProductId)
@@ -151,21 +164,38 @@ describe('updateItemQuantity', () => {
   })
 
   test('should throw a 400 error if quantity is below 0', async () => {
-    await expect(cartService.updateItemQuantity(mockUserId, mockProductId, -1)).rejects.toThrow(
-      new AppError('quantity can not be negative', 400),
-    )
+    await expect(
+      cartService.updateItemQuantity(mockUserId, mockProductId, -1, mockUpdatedAt),
+    ).rejects.toThrow(new AppError('quantity can not be negative', 400))
   })
 
   test('should throw a 404 error if cart item trying to update is not in cart', async () => {
     cartDB.updateQuantity.mockResolvedValue({ count: 0 })
     cartDB.findIfCartItemExists.mockResolvedValue(null)
 
-    await expect(cartService.updateItemQuantity('wrongUserId', mockProductId, 1)).rejects.toThrow(
-      new AppError('Item not found in cart', 404),
-    )
+    await expect(
+      cartService.updateItemQuantity('wrongUserId', mockProductId, 1, mockUpdatedAt),
+    ).rejects.toThrow(new AppError('Item not found in cart', 404))
 
     expect(cartDB.findIfCartItemExists).toHaveBeenCalledWith('wrongUserId', mockProductId)
-    expect(cartDB.updateQuantity).toHaveBeenCalledWith('wrongUserId', mockProductId, 1)
+    expect(cartDB.updateQuantity).toHaveBeenCalledWith(
+      'wrongUserId',
+      mockProductId,
+      1,
+      mockUpdatedAt,
+    )
+    expect(cartCache.deleteCartItems).not.toHaveBeenCalled()
+  })
+
+  test('should throw a 409 error if the cart is out of sync', async () => {
+    cartDB.updateQuantity.mockResolvedValue({ count: 0 })
+    cartDB.findIfCartItemExists.mockResolvedValue(mockCartItem)
+
+    await expect(
+      cartService.updateItemQuantity(mockUserId, mockProductId, 1, 'outdated-updatedAt'),
+    ).rejects.toThrow(new AppError('Your cart is out of sync. Please refresh.', 409))
+
+    expect(cartDB.findIfCartItemExists).toHaveBeenCalledWith(mockUserId, mockProductId)
     expect(cartCache.deleteCartItems).not.toHaveBeenCalled()
   })
 
@@ -173,12 +203,19 @@ describe('updateItemQuantity', () => {
     cartDB.updateQuantity.mockResolvedValue({ count: 0 })
     cartDB.findIfCartItemExists.mockResolvedValue(mockCartItem)
 
-    await expect(cartService.updateItemQuantity(mockUserId, mockProductId, 100)).rejects.toThrow(
+    await expect(
+      cartService.updateItemQuantity(mockUserId, mockProductId, 100, mockUpdatedAt),
+    ).rejects.toThrow(
       new AppError('Item quantity exceeds available stock', 400), //NOTE: CREATE env FOR THE ERROR MESSAGES AND STATUS CODES
     )
 
     expect(cartDB.findIfCartItemExists).toHaveBeenCalledWith(mockUserId, mockProductId)
-    expect(cartDB.updateQuantity).toHaveBeenCalledWith(mockUserId, mockProductId, 100)
+    expect(cartDB.updateQuantity).toHaveBeenCalledWith(
+      mockUserId,
+      mockProductId,
+      100,
+      mockUpdatedAt,
+    )
     expect(cartCache.deleteCartItems).not.toHaveBeenCalled()
   })
 })
