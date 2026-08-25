@@ -7,9 +7,7 @@ export const validate = (schema) => (req, res, next) => {
   })
 
   if (!result.success) {
-    const errorMessage = result.error.issues
-      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-      .join(' | ')
+    const errorMessage = result.error.issues.map((issue) => `${issue.message}`).join(' | ')
 
     throw new AppError(errorMessage, 400)
   }
