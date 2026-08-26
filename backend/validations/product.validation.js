@@ -15,7 +15,12 @@ export const addProductSchema = z.object({
 })
 
 export const productIdParamsSchema = z.object({
-  params: z.object({ productId: z.string().min(1, 'Missing required parameters').uuid() }),
+  params: z.object({
+    productId: z
+      .string()
+      .min(1, 'Missing required parameters')
+      .uuid({ message: 'No product found' }),
+  }),
 })
 
 export const productCategoryParamsSchema = z.object({
