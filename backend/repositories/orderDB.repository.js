@@ -1,3 +1,4 @@
+import redis from '../config/redis.js'
 import stripe from '../config/stripe.js'
 import AppError from '../errors/AppError.js'
 import { safeAwait } from '../helpers/await.helper.js'
