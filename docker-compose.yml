@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4005:4005'
+    environment:
+      - PORT=4005
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - ACCESS_TOKEN_EXP=${ACCESS_TOKEN_EXP}
+      - REFRESH_TOKEN_EXP=${REFRESH_TOKEN_EXP}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - NODE_ENV=development
+      - DATABASE_URL=${DATABASE_URL}
+      - DIRECT_URL=${DIRECT_URL}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - REDIS_URL=redis://cache:6379
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - cache
+
+  cache:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
