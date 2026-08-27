@@ -19,4 +19,4 @@ COPY --chown=node:node . .
 
 EXPOSE 4005
 
-CMD npx prisma generate && node backend/server.js
+CMD ["sh", "-c", "npx prisma generate && node backend/server.js"]
