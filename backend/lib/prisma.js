@@ -8,11 +8,11 @@ neonConfig.webSocketConstructor = ws
 
 const connectionString = process.env.DATABASE_URL
 
-if (!connectionString) {
+if (!connectionString && process.env.NODE_ENV === 'production') {
   throw new AppError('❌ CRITICAL: DATABASE_URL environment variable is missing or undefined!', 500)
 }
 
-const adapter = new PrismaNeon({ connectionString })
+const adapter = new PrismaNeon({ connectionString: connectionString || '' })
 
 const prisma = new PrismaClient({ adapter })
 
