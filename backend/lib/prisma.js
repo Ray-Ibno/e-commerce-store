@@ -2,7 +2,7 @@ import { neonConfig } from '@neondatabase/serverless'
 import { PrismaNeon } from '@prisma/adapter-neon'
 import { PrismaClient } from '@prisma/client'
 import ws from 'ws'
-import AppError from '../errors/AppError'
+import AppError from '../errors/AppError.js'
 
 neonConfig.webSocketConstructor = ws
 
