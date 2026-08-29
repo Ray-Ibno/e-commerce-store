@@ -32,6 +32,7 @@ export const orderDB = {
         payment_intent_data: {
           metadata: {
             orderId,
+            userId,
           },
         },
       },
@@ -98,7 +99,7 @@ export const orderDB = {
       return true
     })
   },
-  updateStatus(orderId, status) {
+  updateStatus(orderId, userId, status) {
     return prisma.$transaction(async (tx) => {
       const existingOrder = await tx.order.findUnique({
         where: { id: orderId },
@@ -115,10 +116,10 @@ export const orderDB = {
       })
 
       await tx.cartItem.deleteMany({
-        where: { userId: existingOrder.userId },
+        where: { userId },
       })
 
-      await safeAwait(redis.del(`cart_items:${existingOrder.userId}`))
+      await safeAwait(redis.del(`cart_items:${userId}`))
 
       console.log('✅ Database updated successfully.')
       return true

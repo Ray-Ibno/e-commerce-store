@@ -27,23 +27,27 @@ export const handleWebhookEvent = async (rawBody, signature) => {
       const userEmail = session.customer_details.email
       const totalAmount = session.amount_total / 100
 
-      const wasUpdated = await orderDB.fulfillPaidOrder(orderId, userId)
+      await orderDB.fulfillPaidOrder(orderId, userId)
       return `💰 Payment of $${totalAmount} succeeded for user: ${userEmail}`
     }
 
     case 'checkout.session.expired': {
       const session = event.data.object
-      const orderId = session.metadata.orderId
 
-      const wasUpdated = await orderDB.updateStatus(orderId, 'cancelled')
+      const orderId = session.metadata.orderId
+      const userId = session.client_reference_id
+
+      await orderDB.updateStatus(orderId, userId, 'cancelled')
       return `✅ Order ${orderId} cancelled due to session expiration`
     }
 
     case 'payment_intent.payment_failed': {
       const paymentIntent = event.data.object
-      const orderId = paymentIntent.metadata?.orderId
 
-      const wasUpdated = await orderDB.updateStatus(orderId, 'failed')
+      const orderId = paymentIntent.metadata?.orderId
+      const userId = paymentIntent.metadata?.userId
+
+      await orderDB.updateStatus(orderId, userId, 'failed')
       return `❌ Payment failed for order ${orderId}`
     }
 
