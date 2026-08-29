@@ -11,7 +11,7 @@ export const createCheckOutSession = async (userId) => {
     0,
   )
 
-  const newOrder = await orderDB.createOrder(cartItems, calculatedAmount)
+  const newOrder = await orderDB.createOrder(cartItems, calculatedAmount, userId)
   return await orderDB.createSession(userId, cartItems, newOrder.id)
 }
 
@@ -31,20 +31,20 @@ export const handleWebhookEvent = async (rawBody, signature) => {
       return `💰 Payment of $${totalAmount} succeeded for user: ${userEmail}`
     }
 
-    case 'checkout.session.canceled': {
+    case 'checkout.session.expired': {
       const session = event.data.object
       const orderId = session.metadata.orderId
 
       const wasUpdated = await orderDB.updateStatus(orderId, 'cancelled')
-      return `✅ Order ${orderId} cancelled successfully`
+      return `✅ Order ${orderId} cancelled due to session expiration`
     }
 
     case 'payment_intent.payment_failed': {
       const paymentIntent = event.data.object
-      const orderId = paymentIntent.metadata.orderId
+      const orderId = paymentIntent.metadata?.orderId
 
       const wasUpdated = await orderDB.updateStatus(orderId, 'failed')
-      return `❌ Payment failed for intent ${paymentIntent.id}`
+      return `❌ Payment failed for order ${orderId}`
     }
 
     default:
