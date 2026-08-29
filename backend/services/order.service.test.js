@@ -64,7 +64,11 @@ describe('createCheckOutSession', () => {
 
     expect(result).toEqual(mockSession)
     expect(orderDB.findCartItems).toHaveBeenCalledWith(mockUserId)
-    expect(orderDB.createOrder).toHaveBeenCalledWith(mockCartItems, mockNewOrder.totalAmount)
+    expect(orderDB.createOrder).toHaveBeenCalledWith(
+      mockCartItems,
+      mockNewOrder.totalAmount,
+      mockUserId,
+    )
     expect(orderDB.createSession).toHaveBeenCalledWith(mockUserId, mockCartItems, mockNewOrder.id)
   })
 
@@ -149,17 +153,19 @@ describe('handleWebhookEvent', () => {
   })
 
   test('should not update product stock and delete cart items if order is cancelled', async () => {
-    mockPayload.type = 'checkout.session.canceled'
+    mockPayload.type = 'checkout.session.expired'
     orderDB.constructWebHookEvent.mockReturnValue(mockPayload)
     orderDB.updateStatus.mockResolvedValue(1)
 
     const result = await handleWebhookEvent(mockRawBody, mockSignature)
 
     expect(orderDB.fulfillPaidOrder).not.toHaveBeenCalled()
-    expect(result).toEqual(`✅ Order ${mockSessionEvent.metadata.orderId} cancelled successfully`)
+    expect(result).toEqual(
+      `✅ Order ${mockSessionEvent.metadata.orderId} cancelled due to session expiration`,
+    )
   })
 
-  test('should not update product stock and delete cart items if order is cancelled', async () => {
+  test('should not update product stock and delete cart items if order failed', async () => {
     mockPayload.type = 'payment_intent.payment_failed'
     orderDB.constructWebHookEvent.mockReturnValue(mockPayload)
     orderDB.updateStatus.mockResolvedValue(1)
@@ -167,6 +173,6 @@ describe('handleWebhookEvent', () => {
     const result = await handleWebhookEvent(mockRawBody, mockSignature)
 
     expect(orderDB.fulfillPaidOrder).not.toHaveBeenCalled()
-    expect(result).toEqual(`❌ Payment failed for intent ${mockPaymentIntent.id}`)
+    expect(result).toEqual(`❌ Payment failed for order ${mockPaymentIntent.metadata.orderId}`)
   })
 })
