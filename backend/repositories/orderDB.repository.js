@@ -38,9 +38,10 @@ export const orderDB = {
       { idempotencyKey: `checkout-${orderId}-${Date.now()}` },
     )
   },
-  createOrder(cartItems, calculatedAmount) {
+  createOrder(cartItems, calculatedAmount, userId) {
     return prisma.order.create({
       data: {
+        userId,
         totalAmount: calculatedAmount,
         orderItems: {
           create: cartItems.map((item) => ({
@@ -112,6 +113,13 @@ export const orderDB = {
         where: { id: orderId },
         data: { status },
       })
+
+      await tx.cartItem.deleteMany({
+        where: { userId: existingOrder.userId },
+      })
+
+      await safeAwait(redis.del(`cart_items:${existingOrder.userId}`))
+
       console.log('✅ Database updated successfully.')
       return true
     })
