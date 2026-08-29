@@ -1,0 +1,506 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: E-Commerce-App
+meta:
+  id: wrk_6f8ea7f56bd44746a8d3047ac9ccfcf9
+  created: 1770191026297
+  modified: 1770438118161
+  description: ""
+collection:
+  - name: AUTH
+    meta:
+      id: fld_3ff615275edb453f9d3d3b84d01a4f8f
+      created: 1770430963693
+      modified: 1782103774928
+      sortKey: -1770430963693
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/auth/logout"
+        name: LOGOUT
+        meta:
+          id: req_307c7c84dfd94314be3bc2e36bf3c8b7
+          created: 1770259731604
+          modified: 1787721710790
+          isPrivate: false
+          description: ""
+          sortKey: -1770430991289
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+          - name: authorization
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MDUxMjI2MSwiZXhwIjoxNzcwNTEzMTYxfQ.BsDKktzksGHUapCg2X4pPY5JC_noQWtMTrgkHB8EHn4
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/auth/me"
+        name: GET ME
+        meta:
+          id: req_3bcfb7cc6b5d4b34aad1be27326d5a0f
+          created: 1770454035406
+          modified: 1787721695494
+          isPrivate: false
+          description: ""
+          sortKey: -1770454035406
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.1
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/auth/logoutall"
+        name: LOGOUT ALL
+        meta:
+          id: req_158bd338adac4740a848240f87e1cf7f
+          created: 1784086575803
+          modified: 1787721689029
+          isPrivate: false
+          description: ""
+          sortKey: -1784086575803
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: PRODUCTS
+    meta:
+      id: fld_ff167bdd49134901bc2740bbc5802354
+      created: 1770431017035
+      modified: 1783827777715
+      sortKey: -1770431017035
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/products"
+        name: GET ALL PRODUCTS
+        meta:
+          id: req_320c06eabd6040a9bf601930115e6406
+          created: 1770431032776
+          modified: 1787721683592
+          isPrivate: false
+          description: ""
+          sortKey: -1770431032776
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+          - name: authorization
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MDg5MDIyOSwiZXhwIjoxNzcwODkxMTI5fQ.lhWlSSnZc23AGgX3YTorGjv2OH-JN1p_p6q7_2qnr18
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/2a73e986-2e3f-498c-8e74-5dcd31bcecd1"
+        name: GET PRODUCT
+        meta:
+          id: req_dea9024085464723a4b81aecc6002ae6
+          created: 1770431062300
+          modified: 1787721673761
+          isPrivate: false
+          description: ""
+          sortKey: -1770431062300
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/add"
+        name: ADD PRODUCT
+        meta:
+          id: req_9b943d4cf6d7454cacd118f7a8fd380a
+          created: 1770431161428
+          modified: 1787731010962
+          isPrivate: false
+          description: ""
+          sortKey: -1770431161428
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: name
+              value: CB650R
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+            - name: description
+              value: Bike Product
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+            - name: price
+              value: "100000"
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+            - name: image
+              value: ""
+              description: ""
+              disabled: false
+              fileName: /Users/denden/Downloads/7862e8d6364a02d3ba6ec6e810d82bc3.jpg
+              type: file
+            - name: category
+              value: Bike Category
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+            - name: stock
+              value: "15"
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+          - name: authorization
+            value: Bearer
+              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MTIxMDg5OSwiZXhwIjoxNzcxMjExNzk5fQ.Gl3FUNl53ea0ahFhfFXLtdsp6PjslcJZiVSyEPAjaR4
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/2a73e986-2e3f-498c-8e74-5dcd31bcecd1"
+        name: DELETE PRODUCT
+        meta:
+          id: req_71e0e958ba124bd5a086905730a37936
+          created: 1770431414347
+          modified: 1787731152064
+          isPrivate: false
+          description: ""
+          sortKey: -1770431414347
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/featured"
+        name: GET FEATURED PRODUCTS
+        meta:
+          id: req_6f35abdc20ea4d0bb21ba67c0bd62111
+          created: 1770774890578
+          modified: 1787721652974
+          isPrivate: false
+          description: ""
+          sortKey: -1770774890578
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.3.1
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/3adaa8ea-bf69-4296-af04-a5234b61194e"
+        name: UPDATE PRODUCT
+        meta:
+          id: req_fac7e9d6ba004e91a4800d1160d078d5
+          created: 1782629386851
+          modified: 1787732739597
+          isPrivate: false
+          description: ""
+          sortKey: -1782629386851
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"category": "electronics category"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/products/d34786af-ec32-45a1-a680-8671b3c7d1e3"
+        name: UPDATE PRODUCT FEATURE
+        meta:
+          id: req_96105940243a4191b2088bc13f746993
+          created: 1782630503294
+          modified: 1787732798535
+          isPrivate: false
+          description: ""
+          sortKey: -1782630503294
+        method: PATCH
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: CART
+    meta:
+      id: fld_1dda7654dff64c26b0ba8eae76b22e54
+      created: 1783827798379
+      modified: 1783827798379
+      sortKey: -1783827798379
+      description: ""
+    children:
+      - url: "{{ base_url }}/api/cart"
+        name: UPDATE QUANTITY
+        meta:
+          id: req_66978d289b7a49d3b0d3cee7eb61f9fd
+          created: 1783827814996
+          modified: 1787721625184
+          isPrivate: false
+          description: ""
+          sortKey: -1783827814996
+        method: PATCH
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"productId": "2a73e986-2e3f-498c-8e74-5dcd31bcecd1",
+            	"quantity": 3,
+            	"clientUpdatedAt": "2026-08-16T08:33:12.708Z"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/cart/"
+        name: GET CART ITEMS
+        meta:
+          id: req_3166d55ec76c462a9ab16438bcbcd806
+          created: 1783827837838
+          modified: 1787721607630
+          isPrivate: false
+          description: ""
+          sortKey: -1783827837838
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/api/cart/add"
+        name: ADD TO CART
+        meta:
+          id: req_ebb2b4db9f37478b8feda1b8138b936f
+          created: 1783827841367
+          modified: 1787977314911
+          isPrivate: false
+          description: ""
+          sortKey: -1783827841367
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"productId": "8a4aa606-31d5-4884-aaeb-81ee1211a8b4",
+            	"quantity": 1
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/cart/2a73e986-2e3f-498c-8e74-5dcd31bcecd1"
+        name: DELETE CART ITEM
+        meta:
+          id: req_7fe808d9aa2e4f8b8676c87544f047d2
+          created: 1784077919243
+          modified: 1787734798534
+          isPrivate: false
+          description: ""
+          sortKey: -1784077919243
+        method: DELETE
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{base_url}}/api/cart/deletemany"
+        name: BULK DELTE CART ITEMS
+        meta:
+          id: req_67274b40a5724aa697540eb5f5d89581
+          created: 1784078231015
+          modified: 1787734761779
+          isPrivate: false
+          description: ""
+          sortKey: -1784078231015
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"productIds": ["3adaa8ea-bf69-4296-af04-a5234b61194e", "8a4aa606-31d5-4884-aaeb-81ee1211a8b4"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Order
+    meta:
+      id: fld_5abe85a6ae1e43bd8e675f523f487d29
+      created: 1787362101642
+      modified: 1787362101642
+      sortKey: -1787362101642
+      description: ""
+    children:
+      - url: "{{base_url}}/api/checkout/payment"
+        name: CHECKOUT
+        meta:
+          id: req_538b496cf82041929de3f5989531e63b
+          created: 1787362106221
+          modified: 1787721462145
+          isPrivate: false
+          description: ""
+          sortKey: -1787362106221
+        method: POST
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_0165434ebfb3a01c90056d0852155623fa427bd1
+    created: 1770191026300
+    modified: 1787893635063
+  cookies:
+    - id: defc220f-3843-4715-9a8d-e47f66a2893c
+      key: sid
+      value: ec155870-44c3-4917-9a15-d8ef7cb3ef3b
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+environments:
+  name: Base Environment
+  meta:
+    id: env_0165434ebfb3a01c90056d0852155623fa427bd1
+    created: 1770191026299
+    modified: 1787721416397
+    isPrivate: false
+  subEnvironments:
+    - name: Development
+      meta:
+        id: env_4bb40af5166d45558b2d5e1ff141b7fd
+        created: 1787721338785
+        modified: 1787993067418
+        isPrivate: false
+        sortKey: 1787721338785
+      data:
+        base_url: http://localhost:4005
+        "": ""
+    - name: Production
+      meta:
+        id: env_412fc06d5f7042429d7f6d245fc181ed
+        created: 1787721389339
+        modified: 1787993563286
+        isPrivate: false
+        sortKey: 1787721389339
+      data:
+        base_url: https://e-commerce-store-production-2b05.up.railway.app
+        "": ""
