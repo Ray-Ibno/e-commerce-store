@@ -1,5 +1,3 @@
-const COOKIE_NAME = 'jwt'
-
 const DEFAULT_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',

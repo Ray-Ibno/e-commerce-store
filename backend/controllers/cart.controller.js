@@ -1,5 +1,3 @@
-import AppError from '../errors/AppError.js'
-import prisma from '../lib/prisma.js'
 import * as cartService from '../services/cart.service.js'
 import { sendSuccess } from '../utils/responseHelper.js'
 

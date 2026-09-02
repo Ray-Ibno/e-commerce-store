@@ -3,7 +3,6 @@ import AppError from '../errors/AppError.js'
 import { sessionCache } from '../repositories/sessionCache.repository.js'
 import { sessionDB } from '../repositories/sessionDB.repository.js'
 import { userDB } from '../repositories/userDB.repository.js'
-import jwt, { verify } from 'jsonwebtoken'
 import * as authService from './auth.service.js'
 
 jest.mock('../config/redis.js', () => ({

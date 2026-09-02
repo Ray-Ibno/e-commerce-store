@@ -1,7 +1,5 @@
 import AppError from '../errors/AppError'
 import { orderDB } from '../repositories/orderDB.repository'
-import redis from '../config/redis'
-import prisma from '../lib/prisma'
 import stripe from '../config/stripe'
 import { createCheckOutSession, handleWebhookEvent } from './order.service'
 

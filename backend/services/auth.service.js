@@ -1,5 +1,4 @@
 import AppError from '../errors/AppError.js'
-import jwt from 'jsonwebtoken'
 import { REDIS_AUTH_KEY } from '../constants/index.js'
 import { userDB } from '../repositories/userDB.repository.js'
 import { sessionDB } from '../repositories/sessionDB.repository.js'
