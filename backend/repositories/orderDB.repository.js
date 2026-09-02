@@ -4,6 +4,9 @@ import AppError from '../errors/AppError.js'
 import { safeAwait } from '../helpers/await.helper.js'
 import prisma from '../lib/prisma.js'
 
+const DOMAIN =
+  process.env.SERVER_URL || process.env.CLIENT_URL || `http://localhost:${process.env.PORT || 4005}`
+
 export const orderDB = {
   async createSession(userId, cartItems, orderId) {
     const line_items = cartItems.map((item) => ({
@@ -24,8 +27,8 @@ export const orderDB = {
         line_items,
         mode: 'payment',
         client_reference_id: userId,
-        success_url: 'http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: 'http://localhost:5173/cart',
+        success_url: `${DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${DOMAIN}/cart`,
         metadata: {
           orderId,
         },
