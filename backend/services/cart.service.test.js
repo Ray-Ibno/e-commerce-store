@@ -1,6 +1,4 @@
-import redis from '../config/redis.js'
 import AppError from '../errors/AppError.js'
-import prisma from '../lib/prisma.js'
 import { cartCache } from '../repositories/cartCache.repository.js'
 import { cartDB } from '../repositories/cartDB.repository.js'
 import * as cartService from '../services/cart.service.js'

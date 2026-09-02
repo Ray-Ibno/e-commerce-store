@@ -1,5 +1,4 @@
 import * as authService from '../services/auth.service.js'
-import AppError from '../errors/AppError.js'
 import { bakeSessionCookie, clearSessionCookie } from '../utils/cookieHelper.js'
 import { sendSuccess } from '../utils/responseHelper.js'
 

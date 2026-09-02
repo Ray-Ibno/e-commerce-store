@@ -1,6 +1,5 @@
 import express from 'express'
 import * as authController from '../controllers/auth.controller.js'
-import { validate } from '../middleware/validate.middleware.js'
 import { authenticate } from '../middleware/authenticate.middleware.js'
 import passport from 'passport'
 import { oAuthLimiter, oAuthRedirectLimiter } from '../middleware/limiter.middleware.js'
