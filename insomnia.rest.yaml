@@ -20,7 +20,7 @@ collection:
         meta:
           id: req_307c7c84dfd94314be3bc2e36bf3c8b7
           created: 1770259731604
-          modified: 1787721710790
+          modified: 1788842784224
           isPrivate: false
           description: ""
           sortKey: -1770430991289
@@ -30,9 +30,8 @@ collection:
             value: insomnia/12.3.0
             description: ""
             disabled: false
-          - name: authorization
-            value: Bearer
-              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MDUxMjI2MSwiZXhwIjoxNzcwNTEzMTYxfQ.BsDKktzksGHUapCg2X4pPY5JC_noQWtMTrgkHB8EHn4
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -48,7 +47,7 @@ collection:
         meta:
           id: req_3bcfb7cc6b5d4b34aad1be27326d5a0f
           created: 1770454035406
-          modified: 1787721695494
+          modified: 1788842651981
           isPrivate: false
           description: ""
           sortKey: -1770454035406
@@ -56,6 +55,10 @@ collection:
         headers:
           - name: User-Agent
             value: insomnia/12.3.1
+            description: ""
+            disabled: false
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -71,11 +74,16 @@ collection:
         meta:
           id: req_158bd338adac4740a848240f87e1cf7f
           created: 1784086575803
-          modified: 1787721689029
+          modified: 1788842795912
           isPrivate: false
           description: ""
           sortKey: -1784086575803
         method: POST
+        headers:
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -97,7 +105,7 @@ collection:
         meta:
           id: req_320c06eabd6040a9bf601930115e6406
           created: 1770431032776
-          modified: 1787721683592
+          modified: 1788843213524
           isPrivate: false
           description: ""
           sortKey: -1770431032776
@@ -107,9 +115,8 @@ collection:
             value: insomnia/12.3.0
             description: ""
             disabled: false
-          - name: authorization
-            value: Bearer
-              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MDg5MDIyOSwiZXhwIjoxNzcwODkxMTI5fQ.lhWlSSnZc23AGgX3YTorGjv2OH-JN1p_p6q7_2qnr18
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -125,7 +132,7 @@ collection:
         meta:
           id: req_dea9024085464723a4b81aecc6002ae6
           created: 1770431062300
-          modified: 1787721673761
+          modified: 1788842827761
           isPrivate: false
           description: ""
           sortKey: -1770431062300
@@ -133,6 +140,10 @@ collection:
         headers:
           - name: User-Agent
             value: insomnia/12.3.0
+            description: ""
+            disabled: false
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -148,7 +159,7 @@ collection:
         meta:
           id: req_9b943d4cf6d7454cacd118f7a8fd380a
           created: 1770431161428
-          modified: 1787731010962
+          modified: 1788843200819
           isPrivate: false
           description: ""
           sortKey: -1770431161428
@@ -197,9 +208,8 @@ collection:
             value: insomnia/12.3.0
             description: ""
             disabled: false
-          - name: authorization
-            value: Bearer
-              eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ODcwMWQwYTU1YjVlMWQyODBmNDVlMSIsImlhdCI6MTc3MTIxMDg5OSwiZXhwIjoxNzcxMjExNzk5fQ.Gl3FUNl53ea0ahFhfFXLtdsp6PjslcJZiVSyEPAjaR4
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -215,7 +225,7 @@ collection:
         meta:
           id: req_71e0e958ba124bd5a086905730a37936
           created: 1770431414347
-          modified: 1787731152064
+          modified: 1788843192314
           isPrivate: false
           description: ""
           sortKey: -1770431414347
@@ -223,6 +233,10 @@ collection:
         headers:
           - name: User-Agent
             value: insomnia/12.3.0
+            description: ""
+            disabled: false
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -238,7 +252,7 @@ collection:
         meta:
           id: req_6f35abdc20ea4d0bb21ba67c0bd62111
           created: 1770774890578
-          modified: 1787721652974
+          modified: 1788843185600
           isPrivate: false
           description: ""
           sortKey: -1770774890578
@@ -246,6 +260,10 @@ collection:
         headers:
           - name: User-Agent
             value: insomnia/12.3.1
+            description: ""
+            disabled: false
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
             description: ""
             disabled: false
         settings:
@@ -261,7 +279,7 @@ collection:
         meta:
           id: req_fac7e9d6ba004e91a4800d1160d078d5
           created: 1782629386851
-          modified: 1787732739597
+          modified: 1788843176799
           isPrivate: false
           description: ""
           sortKey: -1782629386851
@@ -275,6 +293,10 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -288,11 +310,16 @@ collection:
         meta:
           id: req_96105940243a4191b2088bc13f746993
           created: 1782630503294
-          modified: 1787732798535
+          modified: 1788843170366
           isPrivate: false
           description: ""
           sortKey: -1782630503294
         method: PATCH
+        headers:
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -314,7 +341,7 @@ collection:
         meta:
           id: req_66978d289b7a49d3b0d3cee7eb61f9fd
           created: 1783827814996
-          modified: 1787721625184
+          modified: 1788843162436
           isPrivate: false
           description: ""
           sortKey: -1783827814996
@@ -330,6 +357,10 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -343,7 +374,7 @@ collection:
         meta:
           id: req_3166d55ec76c462a9ab16438bcbcd806
           created: 1783827837838
-          modified: 1787721607630
+          modified: 1788842879394
           isPrivate: false
           description: ""
           sortKey: -1783827837838
@@ -354,6 +385,10 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -367,7 +402,7 @@ collection:
         meta:
           id: req_ebb2b4db9f37478b8feda1b8138b936f
           created: 1783827841367
-          modified: 1787977314911
+          modified: 1788321596776
           isPrivate: false
           description: ""
           sortKey: -1783827841367
@@ -382,6 +417,10 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+          - name: Cookie
+            value: sid=ec155870-44c3-4917-9a15-d8ef7cb3ef3b
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -395,11 +434,16 @@ collection:
         meta:
           id: req_7fe808d9aa2e4f8b8676c87544f047d2
           created: 1784077919243
-          modified: 1787734798534
+          modified: 1788843130982
           isPrivate: false
           description: ""
           sortKey: -1784077919243
         method: DELETE
+        headers:
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -413,7 +457,7 @@ collection:
         meta:
           id: req_67274b40a5724aa697540eb5f5d89581
           created: 1784078231015
-          modified: 1787734761779
+          modified: 1788843149527
           isPrivate: false
           description: ""
           sortKey: -1784078231015
@@ -427,6 +471,10 @@ collection:
         headers:
           - name: Content-Type
             value: application/json
+          - name: Cookie
+            value: sid=4e2b6ea4-18bf-4d71-80ce-469c6f67191c
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -448,11 +496,16 @@ collection:
         meta:
           id: req_538b496cf82041929de3f5989531e63b
           created: 1787362106221
-          modified: 1787721462145
+          modified: 1788321810580
           isPrivate: false
           description: ""
           sortKey: -1787362106221
         method: POST
+        headers:
+          - name: Cookie
+            value: sid=ec155870-44c3-4917-9a15-d8ef7cb3ef3b
+            description: ""
+            disabled: false
         settings:
           renderRequestBody: true
           encodeUrl: true
@@ -466,16 +519,7 @@ cookieJar:
   meta:
     id: jar_0165434ebfb3a01c90056d0852155623fa427bd1
     created: 1770191026300
-    modified: 1787893635063
-  cookies:
-    - id: defc220f-3843-4715-9a8d-e47f66a2893c
-      key: sid
-      value: ec155870-44c3-4917-9a15-d8ef7cb3ef3b
-      domain: localhost
-      path: /
-      secure: false
-      httpOnly: true
-      hostOnly: true
+    modified: 1788836217700
 environments:
   name: Base Environment
   meta:
