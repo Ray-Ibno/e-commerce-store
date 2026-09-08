@@ -46,6 +46,7 @@ cd e-commerce-store
 Create a `.env` file in the root directory:
 
 ```text
+CLIENT_URL=http://localhost:5173
 PORT=4005
 SESSION_SECRET="your_session_secret"
 ACCESS_TOKEN_EXP=900000
