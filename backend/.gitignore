@@ -11,4 +11,6 @@ node_modules/
 
 # macOS system trash
 .DS_Store
+**/.DS_Store
+
 .neon/
