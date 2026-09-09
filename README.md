@@ -106,7 +106,7 @@ Because Google OAuth requires a real browser interaction, you cannot easily test
    `http://localhost:4005/api/auth/google/callback`
 3. Open your browser and navigate to your server's initiation route:  
    `http://localhost:4005/api/auth/google`
-4. Complete the Google sign-in prompt. Upon success, you can set a Cookie header inside insomnia with the "sid" cookie from the browser to gain authorization and send requests.
+4. Complete the Google sign-in prompt. Upon success, you can copy the value of "sid" cookie from the browser and paste it inside insomnia's "sid" cookie to gain authorization.
 
 ---
 
