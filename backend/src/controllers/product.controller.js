@@ -1,4 +1,3 @@
-import AppError from '../errors/AppError.js'
 import * as productService from '../services/products.service.js'
 import { sendSuccess } from '../utils/responseHelper.js'
 
