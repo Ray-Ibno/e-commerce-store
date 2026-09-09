@@ -2,10 +2,10 @@
   "name": "e-commerce-store",
   "version": "1.0.0",
   "description": "an e-commerce personal project by Alradenn Ibno",
-  "main": "backend/server.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon --env-file=.env backend/server.js",
-    "start": "NODE_ENV=production node backend/server.js",
+    "dev": "NODE_ENV=development nodemon --env-file=.env src/server.js",
+    "start": "NODE_ENV=production node src/server.js",
     "test": "jest --watchAll"
   },
   "type": "module",
