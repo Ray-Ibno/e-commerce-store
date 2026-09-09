@@ -139,25 +139,25 @@ stripe trigger payment_intent.payment_failed --add payment_intent:metadata.order
 - **Rebuild from scratch:** `docker compose up --build`
 - **View container logs:** `docker compose logs -f`
 
-## 📂 Backend Architecture Map
+## 📂 Architecture Map
 
 ```text
 ├── backend/
-│   ├── config/             # Third-party service credentials & settings (Stripe, Redis, Cloudinary)
-│   ├── constants/          # Application-wide immutable freeze values and static codes
-│   ├── controllers/        # Express HTTP layer mapping endpoints, parsing requests, & returning responses
-│   ├── errors/             # Global centralized structural error definitions (AppError class)
-│   ├── helpers/            # Specialized text tools, layout key-mappings, & async wrappers
-│   ├── lib/                # Multi-tenant custom Neon database adapter client configurations
-│   ├── middleware/         # Security gates, rate-limiters, schema validations, & global exception catchers
-│   ├── pipelines/          # Complex multi-table analytical aggregation sequences for product data
-│   ├── repositories/       # Split Data Layers (Postgres Prisma queries vs. Ultra-fast Redis Cache reads)
-│   ├── routes/             # Structural HTTP endpoint declarations mapping URLs to controller gates
-│   ├── services/           # CORE BUSINESS LOGIC layers & matching automated unit test files (*.test.js)
-│   ├── utils/              # Cryptographic token encryption, cookie generation, & payload response formatting
-│   └── validations/        # Strict backend Zod request payload structural schemas
-│
-├── prisma/                 # Relational database configurations, migrations histories, & source schemas
-├── Dockerfile              # Single container footprint parameters to bundle and compile the application
-└── docker-compose.yml      # Orchestration stack settings to spin up local isolated service runtimes
+│   ├── src/
+│       ├── config/             # Third-party service credentials & settings (Stripe, Redis, Cloudinary)
+│       ├── constants/          # Application-wide immutable freeze values and static codes
+│       ├── controllers/        # Express HTTP layer mapping endpoints, parsing requests, & returning responses
+│       ├── errors/             # Global centralized structural error definitions (AppError class)
+│       ├── helpers/            # Specialized text tools, layout key-mappings, & async wrappers
+│       ├── lib/                # Multi-tenant custom Neon database adapter client configurations
+│       ├── middleware/         # Security gates, rate-limiters, schema validations, & global exception catchers
+│       ├── pipelines/          # Complex multi-table analytical aggregation sequences for product data
+│       ├── repositories/       # Split Data Layers (Postgres Prisma queries vs. Ultra-fast Redis Cache reads)
+│       ├── routes/             # Structural HTTP endpoint declarations mapping URLs to controller gates
+│       ├── services/           # CORE BUSINESS LOGIC layers & matching automated unit test files (*.test.js)
+│       ├── utils/              # Cryptographic token encryption, cookie generation, & payload response formatting
+│       ├── validations/        # Strict backend Zod request payload structural schemas
+│       ├── prisma/                 # Relational database configurations, migrations histories, & source schemas
+│       ├── Dockerfile              # Single container footprint parameters to bundle and compile the application
+│       └── docker-compose.yml      # Orchestration stack settings to spin up local isolated service runtimes
 ```
