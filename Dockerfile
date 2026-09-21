@@ -1,3 +1,5 @@
+ARG RAILWAY_SERVICE_ID=""
+
 # =====================================================
 # STAGE 1: The Base
 # =====================================================
@@ -8,6 +10,8 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
+ARG RAILWAY_SERVICE_ID
+
 # Create and move to a folder named /app inside this temporary container
 WORKDIR /app
 
@@ -16,7 +20,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json apps/backend/
 
 # Fetch all the dependencies across the workspace using pnpm's store isolation rules
-RUN --mount=type=cache,id=4d44e5e2-99ce-4c58-bb73-bff0c9a65f9e-pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=${RAILWAY_SERVICE_ID}-pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ==========================================
 # STAGE 2: The Development Builder
