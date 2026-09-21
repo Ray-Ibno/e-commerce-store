@@ -20,7 +20,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend/package.json apps/backend/
 
 # Fetch all the dependencies across the workspace using pnpm's store isolation rules
-RUN --mount=type=cache,id=${RAILWAY_SERVICE_ID}-pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=s/${RAILWAY_SERVICE_ID}-pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # ==========================================
 # STAGE 2: The Development Builder
