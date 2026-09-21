@@ -1,6 +1,8 @@
-import { Prisma } from '@prisma/client'
+import pkg from '../generated/client/index.js'
 import AppError from '../errors/AppError.js'
 import prisma from '../lib/prisma.js'
+
+const { Prisma } = pkg
 
 export const cartDB = {
   findCartItems(userId) {
