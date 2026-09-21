@@ -3,10 +3,9 @@ packages:
 
 minimumReleaseAge: 0
 
-pnpm:
-  minimumReleaseAgeExclude:
-    - '@next/*'
-    - next
+minimumReleaseAgeExclude:
+  - '@next/*'
+  - next
 
 allowBuilds:
   '@parcel/watcher': true
