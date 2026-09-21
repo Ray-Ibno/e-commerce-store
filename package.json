@@ -1,0 +1,10 @@
+{
+  "name": "e-commerce-store-monorepo",
+  "private": true,
+  "scripts": {
+    "dev:backend": "pnpm --filter backend dev",
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend:test": "pnpm --filter backend test",
+    "dev": "pnpm --parallel dev"
+  }
+}

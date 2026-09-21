@@ -16,6 +16,7 @@ passport.use(
       callbackURL: `${DOMAIN}/api/auth/google/callback`,
     },
     async (accessToken, refreshToken, profile, done) => {
+      console.log('profile: ', profile)
       try {
         let activeUser
         let finalRefreshToken = refreshToken

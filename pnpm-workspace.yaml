@@ -1,0 +1,16 @@
+packages:
+  - 'apps/*'
+
+minimumReleaseAge: 0
+
+pnpm:
+  minimumReleaseAgeExclude:
+    - '@next/*'
+    - next
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@prisma/engines': true
+  bcrypt: true
+  prisma: true
+  unrs-resolver: true

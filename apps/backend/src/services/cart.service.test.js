@@ -19,6 +19,14 @@ jest.mock('../lib/prisma.js', () => ({
   },
 }))
 
+jest.mock('../generated/client/index.js', () => ({
+  pgk: {
+    PrismaClient: {
+      PrimaClientKnownRequestError: jest.fn(),
+    },
+  },
+}))
+
 jest.mock('../repositories/cartCache.repository', () => ({
   ...jest.createMockFromModule('../repositories/cartCache.repository'),
 }))

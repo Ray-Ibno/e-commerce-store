@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    container_name: ecom_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: perndb
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  db-migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev-migration-runner
+    environment:
+      - DATABASE_URL=postgres://root:secretpassword@db:5432/perndb
+    depends_on:
+      - db
+
+  cache:
+    image: redis:7-alpine
+    container_name: ecom_cache
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+  pgdata:
