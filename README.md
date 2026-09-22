@@ -17,8 +17,16 @@ A production-ready backend service featuring secure OAuth 2.0 authentication, ca
 
 To eliminate configuration drift, this application uses **Docker Compose** to orchestrate an isolated local developer environment:
 
-- **`backend` service:** Runs an Alpine Node image leveraging multi-stage layer caching for faster builds.
+### 1. docker-compose.yml
+
+- **`db-migrate` service:** A local build service to run development prisma migration.
+- **`db` service:** Runs a Postgres instance to manage data storage.
 - **`cache` service:** Runs a Redis instance to manage stateless user session storage.
+
+### 2. docker-compose.prod.yml
+
+- **`backend` service:** Runs an Alpine Node image leveraging multi-stage layer caching for faster builds.
+- **`db-migrate` service:** A local build service to run production prisma migration.
 
 ---
 
@@ -48,23 +56,30 @@ Create a `.env` file in the root directory:
 ```text
 CLIENT_URL=http://localhost:5173
 PORT=4005
-SESSION_SECRET="your_session_secret"
-ACCESS_TOKEN_EXP=900000
-REFRESH_TOKEN_EXP=604800000
-ENCRYPTION_KEY=2d01e898292ccf033695b96c9d4d43e1
 
 # Google OAuth
 GOOGLE_CLIENT_ID="your_google_client_id"
 GOOGLE_CLIENT_SECRET="your_google_client_secret"
+
+# Tokens
+ACCESS_TOKEN_EXP=900000
+REFRESH_TOKEN_EXP=604800000
+ENCRYPTION_KEY=2d01e898292ccf033695b96c9d4d43e1
 
 # Cloudinary
 CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
 CLOUDINARY_API_KEY="your_cloudinary_api_key"
 CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
 
-# Database (Neon Cloud)
-DATABASE_URL="postgresql://user:password@ep-your-neon-url.tech/neondb?sslmode=require"
-DIRECT_URL="postgresql://user:password@ep-your-neon-url.tech/neondb?sslmode=require"
+# Localized Database & Redis
+DATABASE_URL=postgres://root:secretpassword@localhost:5432/perndb
+DIRECT_URL=postgres://root:secretpassword@localhost:5432/perndb
+REDIS_URL=redis://localhost:6379
+
+# Database (Neon Cloud) & Upstash(Redis)
+DATABASE_URL_PROD="postgresql://user:password@ep-your-neon-url.tech/neondb?sslmode=require"
+DIRECT_URL_PROD="postgresql://user:password@ep-your-neon-url.tech/neondb?sslmode=require"
+REDIS_URL_PROD=rediss://default:gQAAAAAAAR6nAAIgcDJiODcyZDM3ZDI4NzQ0NDEyYWJmNzc1N2RkODdhNDgxZQ@magical-arachnid-73383.upstash.io:6379
 
 # Stripe (Use Test Mode Keys Only)
 STRIPE_SECRET_KEY="sk_test_your_secret_key"
@@ -75,8 +90,22 @@ STRIPE_WEBHOOK_SECRET="whsec_your_webhook_secret"
 
 Run the following command to build the images, generate the Prisma client, and start the environment:
 
+#### 1. For development
+
 ```bash
 docker compose up --build
+```
+
+Once the database and cache is ready, you can start the server and will be listening at `http://localhost:4005`.
+
+```bash
+pnpm dev:backend
+```
+
+#### 1. For production
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
 ```
 
 The server will be live and listening for requests at `http://localhost:4005`.
@@ -138,12 +167,15 @@ stripe trigger payment_intent.payment_failed --add payment_intent:metadata.order
 - **Stop services and clear cache volumes:** `docker compose down -v`
 - **Rebuild from scratch:** `docker compose up --build`
 - **View container logs:** `docker compose logs -f`
+- **Cleanup disk space:** `docker system prune`
 
 ## 📂 Architecture Map
 
 ```text
-├── backend/
-│   ├── src/
+
+├── apps
+│   └── backend/
+│       ├── src/
 │       ├── config/             # Third-party service credentials & settings (Stripe, Redis, Cloudinary)
 │       ├── constants/          # Application-wide immutable freeze values and static codes
 │       ├── controllers/        # Express HTTP layer mapping endpoints, parsing requests, & returning responses
@@ -157,7 +189,9 @@ stripe trigger payment_intent.payment_failed --add payment_intent:metadata.order
 │       ├── services/           # CORE BUSINESS LOGIC layers & matching automated unit test files (*.test.js)
 │       ├── utils/              # Cryptographic token encryption, cookie generation, & payload response formatting
 │       ├── validations/        # Strict backend Zod request payload structural schemas
-│       ├── prisma/                 # Relational database configurations, migrations histories, & source schemas
-│       ├── Dockerfile              # Single container footprint parameters to bundle and compile the application
-│       └── docker-compose.yml      # Orchestration stack settings to spin up local isolated service runtimes
+│       └── prisma/             # Relational database configurations, migrations histories, & source schemas
+├── docker-compose.prod.yml     # Orchestration stack settings to spin up local isolated service runtimes for production build
+├── docker-compose.yml          # Orchestration stack settings to spin up local isolated service runtimes for develoment
+├── Dockerfile                  # Single container footprint parameters to bundle and compile the application
+└── pnpm-workspace.yaml         # Pnpm monorepo workspace configuration
 ```
