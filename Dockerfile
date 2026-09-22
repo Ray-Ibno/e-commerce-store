@@ -63,8 +63,17 @@ COPY . .
 RUN pnpm --filter backend deploy --prod /prod/backend
 RUN pnpm --filter backend exec prisma generate --schema=/prod/backend/prisma/schema.prisma
 
+# ==================================================
+# STAGE 6: The Dedicated Production Migration Runner
+# ==================================================
+FROM prod-builder AS prod-migration-runner
+WORKDIR /app
+
+# Runs db migration
+CMD ["pnpm", "--filter", "backend", "exec", "prisma", "migrate", "deploy", "--schema=./prisma/schema.prisma"]
+
 # ==========================================
-# STAGE 6: The Production Runner
+# STAGE 7: The Production Runner
 # ==========================================
 FROM prod-builder AS production
 WORKDIR /prod/backend
@@ -86,12 +95,3 @@ ENV NODE_ENV=production
 
 # Runs the app
 CMD ["node", "src/server.js"]
-
-# ==================================================
-# STAGE 7: The Dedicated Production Migration Runner
-# ==================================================
-FROM prod-builder AS prod-migration-runner
-WORKDIR /app
-
-# Runs db migration
-CMD ["pnpm", "--filter", "backend", "exec", "prisma", "migrate", "dev", "--schema=./prisma/schema.prisma"]
